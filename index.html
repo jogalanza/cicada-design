@@ -186,46 +186,11 @@
                     A showcase of our most recent and notable work.
                 </p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="group overflow-hidden rounded-xl shadow-lg" data-aos="fade-up" data-aos-delay="100">
-                    <div class="relative overflow-hidden h-64">
-                        <img src="http://static.photos/construction/640x360/1" alt="Modern Residence" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                            <a href="#" class="text-white px-6 py-2 border-2 border-white rounded-full font-medium">View Project</a>
-                        </div>
-                    </div>
-                    <div class="p-6 bg-white">
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Hillside Residence</h3>
-                        <p class="text-gray-600">Modern family home with panoramic views</p>
-                    </div>
-                </div>
-                <div class="group overflow-hidden rounded-xl shadow-lg" data-aos="fade-up" data-aos-delay="200">
-                    <div class="relative overflow-hidden h-64">
-                        <img src="http://static.photos/office/640x360/2" alt="Office Renovation" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                            <a href="#" class="text-white px-6 py-2 border-2 border-white rounded-full font-medium">View Project</a>
-                        </div>
-                    </div>
-                    <div class="p-6 bg-white">
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Tech Hub Offices</h3>
-                        <p class="text-gray-600">Innovative workspace for creative team</p>
-                    </div>
-                </div>
-                <div class="group overflow-hidden rounded-xl shadow-lg" data-aos="fade-up" data-aos-delay="300">
-                    <div class="relative overflow-hidden h-64">
-                        <img src="http://static.photos/retail/640x360/3" alt="Retail Space" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                            <a href="#" class="text-white px-6 py-2 border-2 border-white rounded-full font-medium">View Project</a>
-                        </div>
-                    </div>
-                    <div class="p-6 bg-white">
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Boutique Retail Space</h3>
-                        <p class="text-gray-600">Luxury brand flagship store</p>
-                    </div>
-                </div>
+            <div id="projects-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Projects will be loaded here via JavaScript -->
             </div>
             <div class="text-center mt-12" data-aos="fade-up">
-                <a href="#" class="inline-block btn-primary text-white px-8 py-3 rounded-full font-medium">
+                <a href="projects.html" class="inline-block btn-primary text-white px-8 py-3 rounded-full font-medium">
                     View All Projects
                 </a>
             </div>
@@ -542,6 +507,43 @@
 
         // Initialize Feather Icons
         feather.replace();
+
+        // Fetch featured projects
+        async function fetchFeaturedProjects() {
+            try {
+                const response = await fetch('https://mystrapi.com/api/featured/projects');
+                const projects = await response.json();
+                
+                const container = document.getElementById('projects-container');
+                
+                projects.slice(0, 3).forEach((project, index) => {
+                    const projectCard = `
+                        <div class="group overflow-hidden rounded-xl shadow-lg" data-aos="fade-up" data-aos-delay="${(index + 1) * 100}">
+                            <div class="relative overflow-hidden h-64">
+                                <img src="${project.image || 'http://static.photos/construction/640x360/' + (index + 1)}" 
+                                     alt="${project.title}" 
+                                     class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                                <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                                    <a href="project-detail.html?id=${project.id}" class="text-white px-6 py-2 border-2 border-white rounded-full font-medium">View Project</a>
+                                </div>
+                            </div>
+                            <div class="p-6 bg-white">
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">${project.title}</h3>
+                                <p class="text-gray-600">${project.description || 'Professional construction project'}</p>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += projectCard;
+                });
+                
+                feather.replace();
+            } catch (error) {
+                console.error('Error fetching projects:', error);
+            }
+        }
+
+        // Load projects when page loads
+        document.addEventListener('DOMContentLoaded', fetchFeaturedProjects);
     </script>
 </body>
 </html>
